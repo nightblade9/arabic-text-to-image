@@ -1,32 +1,20 @@
-# https://stackoverflow.com/questions/17856242/convert-string-to-image-in-python
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+# https://stackoverflow.com/questions/18942605/how-to-use-unicode-characters-with-pil
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-OUTLINE_THICKNESS = 3
+#configuration
+font_size=36
+width=200
+height=100
+back_ground_color=(255,255,255)
+font_size=36
+font_color=(0,0,0)
+unicode_text = u"بِسمللَه"
 
-def get_size(text, font):
-  img = Image.new('RGB', (1, 1))
-  d = ImageDraw.Draw(img)
-  d.text((0, 0), text, fill=(255, 0, 0))
-  text_width, text_height = d.textsize(text)
-  print("Text size: {}".format((text_width, text_height)))
-  return (text_width, text_height)
+im  =  Image.new ( "RGB", (width,height), back_ground_color )
+draw  =  ImageDraw.Draw ( im )
+unicode_font = ImageFont.truetype("A_Nefel_Sereke.ttf", font_size)
+draw.text ( (10,10), unicode_text, font=unicode_font, fill=font_color )
 
-def generate_image(text, font_name="arial.ttf", font_size=12, text_colour=(255, 255, 255)):
-  font_size = 11   
-
-  outline_colour = "black"
-  colorBackground = "white"
-
-  font = ImageFont.truetype(font_name, font_size)
-  image_width, image_height = get_size(text, font)
-  img = Image.new('RGB', (image_width, image_height * 2), text_colour)
-  d = ImageDraw.Draw(img)
-  d.text((2, image_height / 2), text, fill=(0, 0, 0), font=font)
-
-  img.save("image.png")
-  print("Generated image.png")
-
-if __name__ == "__main__":
-    generate_image(u"بِسم للَه".encode("utf-8"), "A_Nefel_Sereke.ttf")
+im.save("text.png")

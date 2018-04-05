@@ -29,4 +29,4 @@ def generate_image(text, font_name="arial.ttf", font_size=12, text_colour=(255, 
   print("Generated image.png")
 
 if __name__ == "__main__":
-    generate_image("Hello, world.")
+    generate_image(u"بِسم للَه".encode("utf-8"), "A_Nefel_Sereke.ttf")

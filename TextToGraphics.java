@@ -8,20 +8,52 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 
 public class TextToGraphics {
 
-    private static String FILE_ENCODING = "utf-8";
-    private static String OUTPUT_DIRECTORY = "output";
-    private static int FONT_SIZE = 64;
-    private static Color TEXT_COLOUR = Color.WHITE;
+    private static final String FILE_ENCODING = "utf-8";
+    private static final String OUTPUT_DIRECTORY = "output";
+    private static final int FONT_SIZE = 64;
+    private static final Color TEXT_COLOUR = Color.BLUE;
+    private static HashMap<String, String> TRANSLITERATION_TABLE;
+
+    static {
+        TRANSLITERATION_TABLE = new HashMap<String, String>();
+        TRANSLITERATION_TABLE.put("ا", "a"); TRANSLITERATION_TABLE.put("أ", "a");
+        TRANSLITERATION_TABLE.put("ب", "b"); TRANSLITERATION_TABLE.put("ت", "t");
+        TRANSLITERATION_TABLE.put("ث", "th"); TRANSLITERATION_TABLE.put("ج", "j");
+        TRANSLITERATION_TABLE.put("ح", "7"); TRANSLITERATION_TABLE.put("خ", "kh");
+        TRANSLITERATION_TABLE.put("د", "d"); TRANSLITERATION_TABLE.put("ذ", "dh");
+        TRANSLITERATION_TABLE.put("ر", "r"); TRANSLITERATION_TABLE.put("ز", "z");
+        TRANSLITERATION_TABLE.put("س", "s"); TRANSLITERATION_TABLE.put("ش", "sh");
+        TRANSLITERATION_TABLE.put("ص", "s"); TRANSLITERATION_TABLE.put("ض", "d"); 
+        TRANSLITERATION_TABLE.put("ط", "t"); TRANSLITERATION_TABLE.put("ظ", "th");
+        TRANSLITERATION_TABLE.put("ع", "3"); TRANSLITERATION_TABLE.put("غ", "gh");
+        TRANSLITERATION_TABLE.put("ف", "f"); TRANSLITERATION_TABLE.put("ق", "q");
+        TRANSLITERATION_TABLE.put("ك", "k"); TRANSLITERATION_TABLE.put("ل", "l");
+        TRANSLITERATION_TABLE.put("م", "m"); TRANSLITERATION_TABLE.put("ن", "n");
+        TRANSLITERATION_TABLE.put("ه", "h"); TRANSLITERATION_TABLE.put("و", "w");
+        TRANSLITERATION_TABLE.put("ي", "y"); TRANSLITERATION_TABLE.put("ى", "y");
+        TRANSLITERATION_TABLE.put("ء", "a");
+        // tashkeel
+        TRANSLITERATION_TABLE.put("ٌ", "u"); 
+        TRANSLITERATION_TABLE.put("َ", "a"); TRANSLITERATION_TABLE.put("ِ", "i"); 
+        TRANSLITERATION_TABLE.put("ٌ", "un"); TRANSLITERATION_TABLE.put("ُ", "u"); 
+        TRANSLITERATION_TABLE.put("ٍ", "in");
+        // ta-marbuwtah; is rarely in the middle of a word.
+        TRANSLITERATION_TABLE.put("ة", "h");         
+    }
 
     public static void main(String[] args) {
         ArrayList<String> texts = loadTextsFromFile("arabic.txt");
         System.out.println("Processing " + texts.size() + " entries");
         for (int i = 0; i < texts.size(); i++) {
-            createImage(texts.get(i), "file" + (i + 1) + ".png");
+            String arabic = texts.get(i);
+            String outputFilename = transliterate(arabic) + ".png";
+            createImage(arabic, outputFilename);
         }
     }
 
@@ -86,5 +118,27 @@ public class TextToGraphics {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static String transliterate(String s) {
+        String toReturn = s.toString();
+        
+        for (Map.Entry<String, String> entry : TRANSLITERATION_TABLE.entrySet()) {
+            String arabicLetter = entry.getKey();
+            String transliterationText = entry.getValue();
+            toReturn = toReturn.replace(arabicLetter, transliterationText);
+        }
+
+        // Shaddah is the letter before it
+        for (int i = 0; i < toReturn.length(); i++) {
+            char c = toReturn.charAt(i);
+            if (c == 'ّ') {            
+                toReturn = toReturn.substring(0, i) // up to, excluding shaddah
+                + toReturn.charAt(i - 1) // repeat last letter
+                + toReturn.substring(i + 1); // skip shaddah, everything else
+            }
+        }
+
+        return toReturn;
     }
 }

@@ -15,7 +15,8 @@ public class TextToGraphics {
         String text = "";
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader("arabic.txt"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                new FileInputStream("arabic.txt"), "utf-8"));
             String line = br.readLine();
             text = line;
 

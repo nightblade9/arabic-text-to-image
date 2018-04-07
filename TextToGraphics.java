@@ -14,6 +14,8 @@ public class TextToGraphics {
 
     private static String FILE_ENCODING = "utf-8";
     private static String OUTPUT_DIRECTORY = "output";
+    private static int FONT_SIZE = 64;
+    private static Color TEXT_COLOUR = Color.WHITE;
 
     public static void main(String[] args) {
         ArrayList<String> texts = loadTextsFromFile("arabic.txt");
@@ -56,7 +58,7 @@ public class TextToGraphics {
         try {            
             BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = img.createGraphics();
-            Font font = new Font("Arial", Font.PLAIN, 48);
+            Font font = new Font("Arial", Font.PLAIN, FONT_SIZE);
             g2d.setFont(font);
             FontMetrics fm = g2d.getFontMetrics();
             int width = fm.stringWidth(text);
@@ -75,7 +77,7 @@ public class TextToGraphics {
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
             g2d.setFont(font);
             fm = g2d.getFontMetrics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(TEXT_COLOUR);
             g2d.drawString(text, 0, fm.getAscent());
             g2d.dispose();
 

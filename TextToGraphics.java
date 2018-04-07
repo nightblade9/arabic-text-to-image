@@ -7,24 +7,53 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 public class TextToGraphics {
 
+    private static String FILE_ENCODING = "utf-8";
+    private static String OUTPUT_DIRECTORY = "output";
+
     public static void main(String[] args) {
-        String text = "";
+        ArrayList<String> texts = loadTextsFromFile("arabic.txt");
+        System.out.println("Processing " + texts.size() + " entries");
+        for (int i = 0; i < texts.size(); i++) {
+            createImage(texts.get(i), "file" + (i + 1) + ".png");
+        }
+    }
+
+    private static ArrayList<String> loadTextsFromFile(String fileName) {
+        ArrayList<String> toReturn = new ArrayList<String>();
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                new FileInputStream("arabic.txt"), "utf-8"));
-            String line = br.readLine();
-            text = line;
+            FileInputStream stream = new FileInputStream(fileName);
+            InputStreamReader streamReader = new InputStreamReader(stream, FILE_ENCODING);
+            BufferedReader br = new BufferedReader(streamReader);
 
-            /*
-            Because font metrics is based on a graphics context, we need to create
-            a small, temporary image so we can ascertain the width and height
-            of the final image
-            */
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                toReturn.add(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return toReturn;
+    }
+
+    private static void createImage(String text, String outputFileName) {       
+        /*
+        Because font metrics is based on a graphics context, we need to create
+        a small, temporary image so we can ascertain the width and height
+        of the final image
+        */
+        try {            
             BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = img.createGraphics();
             Font font = new Font("Arial", Font.PLAIN, 48);
@@ -50,11 +79,10 @@ public class TextToGraphics {
             g2d.drawString(text, 0, fm.getAscent());
             g2d.dispose();
 
-            ImageIO.write(img, "png", new File("text.png"));
-        } catch (Exception ex) {
+            String fullFileName = OUTPUT_DIRECTORY + "\\" + outputFileName;
+            ImageIO.write(img, "png", new File(fullFileName));
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
-
 }

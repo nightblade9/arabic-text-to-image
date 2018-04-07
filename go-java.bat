@@ -1,4 +1,5 @@
-del text.png
+rd /s /q output
+mkdir output
+
 javac TextToGraphics.java
 java TextToGraphics
-start text.png

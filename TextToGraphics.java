@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import com.google.gson.Gson;
 
 public class TextToGraphics {
 
@@ -48,17 +49,35 @@ public class TextToGraphics {
     }
 
     public static void main(String[] args) {
-        ArrayList<String> texts = loadTextsFromFile("arabic.txt");
+        ArrayList<Word> texts = loadTextsFromFile("words.json");
         System.out.println("Processing " + texts.size() + " entries");
-        for (int i = 0; i < texts.size(); i++) {
-            String arabic = texts.get(i);
-            String outputFilename = transliterate(arabic) + ".png";
-            createImage(arabic, outputFilename);
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("output\\words.json"));
+            writer.write("[\r\n");
+
+            for (int i = 0; i < texts.size(); i++) {
+                Word word = texts.get(i);
+                word.transliteration = transliterate(word.arabic);
+                String outputFilename = word.transliteration + ".png";
+                createImage(word.arabic, outputFilename);
+                writer.write(String.format(
+                    "\t{ \"arabic\": \"%s\", \"english\": \"%s\", \"transliteration\": \"%s\" },\r\n",
+                    word.arabic, word.english, word.transliteration));
+            }
+
+            writer.write("]\r\n");
+            writer.flush();
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private static ArrayList<String> loadTextsFromFile(String fileName) {
-        ArrayList<String> toReturn = new ArrayList<String>();
+    private static ArrayList<Word> loadTextsFromFile(String fileName) {
+        ArrayList<Word> toReturn = new ArrayList<Word>();
+        Gson g = new Gson();
 
         try {
             FileInputStream stream = new FileInputStream(fileName);
@@ -68,7 +87,13 @@ public class TextToGraphics {
             String line;
 
             while ((line = br.readLine()) != null) {
-                toReturn.add(line);
+                if (line.length() == 1) {
+                    // opening/closing brace
+                    continue;
+                }
+                line = line.substring(0, line.length() - 1); // trim trailing comma
+                Word w = g.fromJson(line, Word.class);
+                toReturn.add(w);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

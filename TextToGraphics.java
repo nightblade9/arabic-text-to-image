@@ -17,8 +17,8 @@ public class TextToGraphics {
 
     private static final String FILE_ENCODING = "utf-8";
     private static final String OUTPUT_DIRECTORY = "output";
-    private static final int FONT_SIZE = 64;
-    private static final Color TEXT_COLOUR = Color.BLUE;
+    private static final int FONT_SIZE = 64; // shrink to 32 in-game
+    private static final Color TEXT_COLOUR = Color.WHITE;
     private static HashMap<String, String> TRANSLITERATION_TABLE;
 
     static {
@@ -162,6 +162,12 @@ public class TextToGraphics {
                 + toReturn.charAt(i - 1) // repeat last letter
                 + toReturn.substring(i + 1); // skip shaddah, everything else
             }
+        }
+        
+        // If it starts with 3 or 7, replace with x3 or x7. This is because filenames that
+        // start with images break OpenFL; see: https://github.com/openfl/openfl/issues/1876
+        if (toReturn.startsWith("3") || toReturn.startsWith("7")) {
+            toReturn = "x" + toReturn;
         }
 
         return toReturn;

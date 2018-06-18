@@ -17,8 +17,8 @@ public class TextToGraphics {
 
     private static final String FILE_ENCODING = "utf-8";
     private static final String OUTPUT_DIRECTORY = "output";
-    private static final int FONT_SIZE = 64; // shrink to 32 in-game
-    private static final Color TEXT_COLOUR = Color.WHITE;
+    private static final int FONT_SIZE = 180; // shrink to 32 in-game
+    private static final Color TEXT_COLOUR = Color.BLACK;
     private static HashMap<String, String> TRANSLITERATION_TABLE;
 
     static {
@@ -45,7 +45,9 @@ public class TextToGraphics {
         TRANSLITERATION_TABLE.put("ٌ", "un"); TRANSLITERATION_TABLE.put("ُ", "u"); 
         TRANSLITERATION_TABLE.put("ٍ", "in");
         // ta-marbuwtah; is rarely in the middle of a word.
-        TRANSLITERATION_TABLE.put("ة", "h");         
+        TRANSLITERATION_TABLE.put("ة", "h");   
+        //sukoon; put nothing
+        TRANSLITERATION_TABLE.put("ْ", "");      
     }
 
     public static void main(String[] args) {
@@ -115,7 +117,7 @@ public class TextToGraphics {
         try {            
             BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = img.createGraphics();
-            Font font = new Font("Arial", Font.PLAIN, FONT_SIZE);
+            Font font = new Font("Traditional Arabic Bold", Font.BOLD, FONT_SIZE);
             g2d.setFont(font);
             FontMetrics fm = g2d.getFontMetrics();
             int width = fm.stringWidth(text);

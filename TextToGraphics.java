@@ -47,11 +47,19 @@ public class TextToGraphics {
         // ta-marbuwtah; is rarely in the middle of a word.
         TRANSLITERATION_TABLE.put("ة", "h");   
         //sukoon; put nothing
-        TRANSLITERATION_TABLE.put("ْ", "");      
+        TRANSLITERATION_TABLE.put("ْ", "");
+        // Ah, alif, my old nemesis
+        TRANSLITERATION_TABLE.put("إِ", "i"); // small hamza kasra
+        //TRANSLITERATION_TABLE.put("َٰ", "a");  // I forgot
+        TRANSLITERATION_TABLE.put("ٱ", ""); // hamzatul-wasl
+        TRANSLITERATION_TABLE.put("ٓ", "~"); // long madd
+        TRANSLITERATION_TABLE.put("ۦ", "e"); // small yaa
+        TRANSLITERATION_TABLE.put("ٰ", "aa"); // alif dagger
     }
 
     public static void main(String[] args) {
-        ArrayList<Word> texts = loadTextsFromFile("words.json");
+        // ArrayList<Word> texts = loadTextsFromJsonFile("words.json");
+        ArrayList<Word> texts = loadTextsFromFlatFile("quran-uthmani.txt");
         System.out.println("Processing " + texts.size() + " entries");
 
         try {
@@ -77,7 +85,37 @@ public class TextToGraphics {
         }
     }
 
-    private static ArrayList<Word> loadTextsFromFile(String fileName) {
+    private static ArrayList<Word> loadTextsFromFlatFile(String fileName) {
+        ArrayList<Word> toReturn = new ArrayList<Word>();
+        HashMap uniqueWordsTransliterationToArabic = new HashMap(1000);
+
+        try {
+            FileInputStream stream = new FileInputStream(fileName);
+            InputStreamReader streamReader = new InputStreamReader(stream, FILE_ENCODING);
+            BufferedReader br = new BufferedReader(streamReader);
+
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith("#")) { // ignore comments
+                    String[] words = line.split(" ");
+                    for (String word : words) {
+                        toReturn.add(new Word(word, ""));
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return toReturn;
+    }
+
+    private static ArrayList<Word> loadTextsFromJsonFile(String fileName) {
         ArrayList<Word> toReturn = new ArrayList<Word>();
         Gson g = new Gson();
 

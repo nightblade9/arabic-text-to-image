@@ -18,7 +18,7 @@ public class TextToGraphics {
     private static final String FILE_ENCODING = "utf-8";
     private static final String OUTPUT_DIRECTORY = "output";
     private static final int FONT_SIZE = 180; // shrink to 32 in-game
-    private static final Color TEXT_COLOUR = Color.BLACK;
+    private static final Color TEXT_COLOUR = Color.WHITE;
     private static HashMap<String, String> TRANSLITERATION_TABLE;
 
     static {
@@ -45,14 +45,19 @@ public class TextToGraphics {
         TRANSLITERATION_TABLE.put("ٌ", "un"); TRANSLITERATION_TABLE.put("ُ", "u"); 
         TRANSLITERATION_TABLE.put("ٍ", "in");
         // ta-marbuwtah; is rarely in the middle of a word.
-        TRANSLITERATION_TABLE.put("ة", "h");   
+        TRANSLITERATION_TABLE.put("ة", "h");  
+		//idgaam small meem with tanween
+        TRANSLITERATION_TABLE.put("ۭ", "m");
         //sukoon; put nothing
         TRANSLITERATION_TABLE.put("ْ", "");
         // Ah, alif, my old nemesis
         TRANSLITERATION_TABLE.put("إِ", "i"); // small hamza kasra
         //TRANSLITERATION_TABLE.put("َٰ", "a");  // I forgot
         TRANSLITERATION_TABLE.put("ٱ", ""); // hamzatul-wasl
-        TRANSLITERATION_TABLE.put("ٓ", "~"); // long madd
+		TRANSLITERATION_TABLE.put("ٓئ","ee"); // long madd
+        //n TRANSLITERATION_TABLE.put("ٓ", "~"); // long madd
+		 TRANSLITERATION_TABLE.put("~", ""); // long madd
+		 TRANSLITERATION_TABLE.put("ٓ", ""); // long madd
         TRANSLITERATION_TABLE.put("ۦ", "e"); // small yaa
         TRANSLITERATION_TABLE.put("ٰ", "aa"); // alif dagger
     }
@@ -69,7 +74,7 @@ public class TextToGraphics {
             for (int i = 0; i < texts.size(); i++) {
                 Word word = texts.get(i);
                 word.transliteration = transliterate(word.arabic);
-                String outputFilename = word.transliteration + ".png";
+                String outputFilename = "" + i + "_"+ word.transliteration + ".png";
                 createImage(word.arabic, outputFilename);
                 writer.write(String.format(
                     "\t{ \"arabic\": \"%s\", \"english\": \"%s\", \"transliteration\": \"%s\" },\r\n",
@@ -155,7 +160,7 @@ public class TextToGraphics {
         try {            
             BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = img.createGraphics();
-            Font font = new Font("Traditional Arabic Bold", Font.BOLD, FONT_SIZE);
+            Font font = new Font("Scheherazade SuLt DigRoh Bold", Font.BOLD, FONT_SIZE);
             g2d.setFont(font);
             FontMetrics fm = g2d.getFontMetrics();
             int width = fm.stringWidth(text);
@@ -173,6 +178,7 @@ public class TextToGraphics {
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
             g2d.setFont(font);
+			// g2d.sukoon(2);
             fm = g2d.getFontMetrics();
             g2d.setColor(TEXT_COLOUR);
             g2d.drawString(text, 0, fm.getAscent());
